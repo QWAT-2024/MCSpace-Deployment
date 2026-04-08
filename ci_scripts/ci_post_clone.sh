@@ -53,6 +53,7 @@ flutter --version
 
 echo "▶️ Running flutter pub get..."
 flutter pub get --no-example
+flutter precache --ios
 
 echo "▶️ Installing CocoaPods dependencies..."
 # Change to ios directory only if it exists and we aren't already there
