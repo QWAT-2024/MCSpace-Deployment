@@ -36,14 +36,19 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks!
+  use_frameworks! :linkage => :static
   use_modular_headers!
 
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  # Trick flutter_install_all_ios_pods to look for .flutter-plugins-dependencies in the root
+  # (Standard helper uses File.join(ios_application_path, '..', '.flutter-plugins-dependencies'))
+  flutter_install_all_ios_pods File.join(File.dirname(File.realpath(__FILE__)), 'ios')
 end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+    end
   end
 end
