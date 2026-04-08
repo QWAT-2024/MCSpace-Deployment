@@ -55,6 +55,17 @@ echo "▶️ Running flutter pub get..."
 flutter pub get --no-example
 flutter precache --ios
 
+# Patch Generated.xcconfig to fix hardcoded local paths for the CI environment
+if [ -f Flutter/Generated.xcconfig ]; then
+    echo "▶️ Patching Generated.xcconfig..."
+    sed -i '' "s|FLUTTER_ROOT=.*|FLUTTER_ROOT=/tmp/flutter|g" Flutter/Generated.xcconfig
+    sed -i '' "s|FLUTTER_APPLICATION_PATH=.*|FLUTTER_APPLICATION_PATH=.|g" Flutter/Generated.xcconfig
+elif [ -f ios/Flutter/Generated.xcconfig ]; then
+    echo "▶️ Patching ios/Flutter/Generated.xcconfig..."
+    sed -i '' "s|FLUTTER_ROOT=.*|FLUTTER_ROOT=/tmp/flutter|g" ios/Flutter/Generated.xcconfig
+    sed -i '' "s|FLUTTER_APPLICATION_PATH=.*|FLUTTER_APPLICATION_PATH=..|g" ios/Flutter/Generated.xcconfig
+fi
+
 echo "▶️ Installing CocoaPods dependencies..."
 # Change to ios directory only if it exists and we aren't already there
 if [ -d ios ]; then
