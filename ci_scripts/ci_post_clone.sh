@@ -66,6 +66,22 @@ elif [ -f ios/Flutter/Generated.xcconfig ]; then
     sed -i '' "s|FLUTTER_APPLICATION_PATH=.*|FLUTTER_APPLICATION_PATH=..|g" ios/Flutter/Generated.xcconfig
 fi
 
+# Verify assets directory to satisfy pubspec.yaml
+if [ -d assets/images ]; then
+    echo "✓ Found assets directory: $(ls assets/images | head -n 3)..."
+else
+    echo "▶️ Creating missing assets directory..."
+    mkdir -p assets/images
+fi
+
+# Create a symbolic link for the ios directory so Flutter tools can find their files
+# (This is needed because the deployment repo is flattened)
+if [ ! -d ios ]; then
+    echo "▶️ Creating ios directory symlink..."
+    mkdir -p ios
+    ln -s ../Flutter ios/Flutter
+fi
+
 echo "▶️ Installing CocoaPods dependencies..."
 # Change to ios directory only if it exists and we aren't already there
 if [ -d ios ]; then
