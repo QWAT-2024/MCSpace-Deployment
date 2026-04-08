@@ -1,0 +1,58 @@
+﻿Running Gradle task 'bundleRelease'...                          
+flutter : 
+At line:1 char:1
++ flutter build 
+appbundle > 
+build_log_2.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (:String) [],    
+ RemoteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+FAILURE: Build failed 
+with an exception.
+
+* Where:
+Build file 'C:\Users\qw
+atd\Desktop\Qwat\MCSpac
+e-Mobile-app-main\andro
+id\build.gradle.kts' 
+line: 19
+
+* What went wrong:
+A problem occurred 
+configuring project 
+':app'.
+> [CXX1104] NDK from 
+ndk.dir at C:\Users\qwa
+td\AppData\Local\Androi
+d\sdk\ndk\27.0.12077973
+ had version 
+[27.0.12077973] which 
+disagrees with 
+android.ndkVersion 
+[25.1.8937393]
+
+* Try:
+> Run with 
+--stacktrace option to 
+get the stack trace.
+> Run with --info or 
+--debug option to get 
+more log output.
+> Run with --scan to 
+get full insights.
+> Get more help at http
+s://help.gradle.org.
+
+BUILD FAILED in 1s
+Running Gradle task 'bundleRelease'...                           1,232ms
+Gradle task 
+bundleRelease failed 
+with exit code 1

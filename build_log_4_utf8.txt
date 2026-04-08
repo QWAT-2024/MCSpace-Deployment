@@ -1,0 +1,32 @@
+﻿Running Gradle task 'bundleRelease'...                             55.9s
+flutter : Release app 
+bundle failed to strip 
+debug symbols from 
+native libraries.
+At line:1 char:1
++ flutter build 
+appbundle > 
+build_log_4.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Release app b   
+ un...tive librarie    
+s.:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+Please run flutter 
+doctor and ensure that 
+the Android toolchain 
+does not
+report any issues.
+
+Otherwise, file an 
+issue at https://github
+.com/flutter/flutter/is
+sues.

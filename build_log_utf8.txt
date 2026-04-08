@@ -1,0 +1,26 @@
+﻿Running Gradle task 'bundleRelease'...                             85.5s
+flutter : Release app bundle 
+failed to strip debug 
+symbols from native 
+libraries.
+At line:1 char:1
++ flutter build appbundle > 
+build_log.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (Release  
+   app bun...tive librarie   
+ s.:String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+Please run flutter doctor 
+and ensure that the Android 
+toolchain does not
+report any issues.
+
+Otherwise, file an issue at h
+ttps://github.com/flutter/flu
+tter/issues.

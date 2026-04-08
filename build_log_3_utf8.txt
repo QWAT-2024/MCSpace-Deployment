@@ -1,0 +1,100 @@
+﻿Running Gradle task 'bundleRelease'...                          
+flutter : Your project 
+is configured with 
+Android NDK 
+25.1.8937393, but the 
+following plugin(s) 
+depend on a different 
+Android NDK version:
+At line:1 char:1
++ flutter build 
+appbundle > 
+build_log_3.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Your project    
+ is...id NDK versio    
+n::String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+- cloud_firestore 
+requires Android NDK 
+27.0.12077973
+- firebase_analytics 
+requires Android NDK 
+27.0.12077973
+- firebase_app_check 
+requires Android NDK 
+27.0.12077973
+- firebase_auth 
+requires Android NDK 
+27.0.12077973
+- firebase_core 
+requires Android NDK 
+27.0.12077973
+- firebase_crashlytics 
+requires Android NDK 
+27.0.12077973
+- firebase_storage 
+requires Android NDK 
+27.0.12077973
+- flutter_plugin_androi
+d_lifecycle requires 
+Android NDK 
+27.0.12077973
+- image_picker_android 
+requires Android NDK 
+27.0.12077973
+- 
+path_provider_android 
+requires Android NDK 
+27.0.12077973
+- permission_handler_an
+droid requires Android 
+NDK 27.0.12077973
+- shared_preferences_an
+droid requires Android 
+NDK 27.0.12077973
+- speech_to_text 
+requires Android NDK 
+27.0.12077973
+- url_launcher_android 
+requires Android NDK 
+27.0.12077973
+Fix this issue by 
+using the highest 
+Android NDK version 
+(they are backward 
+compatible).
+Add the following to C:
+\Users\qwatd\Desktop\Qw
+at\MCSpace-Mobile-app-m
+ain\android\app\build.g
+radle.kts:
+
+    android {
+        ndkVersion = 
+"27.0.12077973"
+        ...
+    }
+Running Gradle task 'bundleRelease'...                             76.4s
+Release app bundle 
+failed to strip debug 
+symbols from native 
+libraries.
+Please run flutter 
+doctor and ensure that 
+the Android toolchain 
+does not
+report any issues.
+
+Otherwise, file an 
+issue at https://github
+.com/flutter/flutter/is
+sues.

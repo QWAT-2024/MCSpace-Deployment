@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "611204246163",
+    "project_id": "mc-space-platform",
+    "storage_bucket": "mc-space-platform.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:611204246163:android:d5482031891cf693c33b66",
+        "android_client_info": {
+          "package_name": "com.example.mc_space"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "611204246163-bamp877ggpekqu0cuh3479po05rhca01.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mc_space",
+            "certificate_hash": "c7d718188c51c0779249920ca5a4e40d531a7c27"
+          }
+        },
+        {
+          "client_id": "611204246163-tbntgi9p555hqb0ifhmb313l3pdkotq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAo1Obam-PmTJrb8XsRt_FayYevPfIXcwg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "611204246163-tbntgi9p555hqb0ifhmb313l3pdkotq6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "611204246163-eefs5qqvh7mto0joo96dtb0gsghi9dd1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mcspace.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:611204246163:android:0e595476e0a9b32bc33b66",
+        "android_client_info": {
+          "package_name": "com.mcspace.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "611204246163-vcuhtqnojujfh80pmuiomu5pib63eu6d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mcspace.app",
+            "certificate_hash": "65f67c01a92faad99a0aae441f1b9a3b3dc0558b"
+          }
+        },
+        {
+          "client_id": "611204246163-tbntgi9p555hqb0ifhmb313l3pdkotq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAo1Obam-PmTJrb8XsRt_FayYevPfIXcwg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "611204246163-tbntgi9p555hqb0ifhmb313l3pdkotq6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "611204246163-eefs5qqvh7mto0joo96dtb0gsghi9dd1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mcspace.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
