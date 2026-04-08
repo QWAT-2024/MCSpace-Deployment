@@ -3,8 +3,24 @@ set -e
 
 echo "▶️ Flutter CI Setup Starting..."
 
-# Use the Xcode Cloud repo path
-cd "$CI_PRIMARY_REPOSITORY_PATH"
+# Use the Xcode Cloud repo path, or calculate it from script location
+if [ -z "$CI_PRIMARY_REPOSITORY_PATH" ]; then
+    # If not set, navigate up from ci_scripts directory to project root
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+    echo "▶️ CI_PRIMARY_REPOSITORY_PATH not set, using: $PROJECT_ROOT"
+    cd "$PROJECT_ROOT"
+else
+    echo "▶️ Using CI_PRIMARY_REPOSITORY_PATH: $CI_PRIMARY_REPOSITORY_PATH"
+    cd "$CI_PRIMARY_REPOSITORY_PATH"
+fi
+
+# Verify we're in the right directory
+if [ ! -f pubspec.yaml ]; then
+    echo "❌ Error: pubspec.yaml not found in current directory!"
+    echo "Current directory: $(pwd)"
+    exit 1
+fi
 
 # Download Flutter SDK directly (no Homebrew)
 FLUTTER_VERSION="3.29.3"  # Change to your Flutter version
