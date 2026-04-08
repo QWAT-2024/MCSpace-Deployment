@@ -55,10 +55,14 @@ post_install do |installer|
   end
 
   # Fix search paths for the main Runner target
+  # (Corrected Ruby syntax for AggregateTarget)
   installer.aggregate_targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited) '
-      config.build_settings['HEADER_SEARCH_PATHS'] << '$(SRCROOT)/.symlinks/plugins/** '
+    target.user_targets.each do |user_target|
+      next unless user_target.name == 'Runner'
+      user_target.build_configurations.each do |config|
+        config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited) '
+        config.build_settings['HEADER_SEARCH_PATHS'] << '$(SRCROOT)/.symlinks/plugins/** '
+      end
     end
   end
 end
