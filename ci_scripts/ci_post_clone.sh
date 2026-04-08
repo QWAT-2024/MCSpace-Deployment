@@ -15,15 +15,28 @@ else
     cd "$CI_PRIMARY_REPOSITORY_PATH"
 fi
 
-# Verify we're in the right directory
-if [ ! -f pubspec.yaml ]; then
-    echo "❌ Error: pubspec.yaml not found in current directory!"
+# Search for pubspec.yaml in current directory or subdirectories
+echo "▶️ Searching for pubspec.yaml..."
+if [ -f pubspec.yaml ]; then
+    echo "✓ Found pubspec.yaml in $(pwd)"
+elif [ -f flutter/pubspec.yaml ]; then
+    echo "✓ Found pubspec.yaml in flutter/ subdirectory"
+    cd flutter
+elif [ -d MCSpace-Mobile-app-main ] && [ -f MCSpace-Mobile-app-main/pubspec.yaml ]; then
+    echo "✓ Found pubspec.yaml in MCSpace-Mobile-app-main/ subdirectory"
+    cd MCSpace-Mobile-app-main
+else
+    echo "❌ Error: pubspec.yaml not found!"
     echo "Current directory: $(pwd)"
+    echo "Contents:"
+    ls -la
     exit 1
 fi
 
+echo "▶️ Working directory: $(pwd)"
+
 # Download Flutter SDK directly (no Homebrew)
-FLUTTER_VERSION="3.29.3"  # Change to your Flutter version
+FLUTTER_VERSION="3.41.6"  # Change to your Flutter version
 echo "▶️ Downloading Flutter $FLUTTER_VERSION..."
 git clone https://github.com/flutter/flutter.git --depth 1 --branch $FLUTTER_VERSION /tmp/flutter 2>/dev/null || \
 git clone https://github.com/flutter/flutter.git --depth 1 --tag $FLUTTER_VERSION /tmp/flutter
