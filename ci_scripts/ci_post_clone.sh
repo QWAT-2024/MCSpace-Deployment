@@ -54,7 +54,16 @@ echo "▶️ Running flutter pub get..."
 flutter pub get --no-example
 
 echo "▶️ Installing CocoaPods dependencies..."
-cd ios
+# Change to ios directory only if it exists and we aren't already there
+if [ -d ios ]; then
+    echo "▶️ Changing to ios directory..."
+    cd ios
+elif [ -f Podfile ]; then
+    echo "✓ Already in directory with Podfile, staying here."
+else
+    echo "❌ Error: Could not find ios directory or Podfile!"
+    exit 1
+fi
 
 # Update CocoaPods repo if needed
 echo "▶️ Updating CocoaPods repositories..."
