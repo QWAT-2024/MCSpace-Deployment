@@ -49,6 +49,16 @@ post_install do |installer|
     flutter_additional_ios_build_settings(target)
     target.build_configurations.each do |config|
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      config.build_settings['SWIFT_VERSION'] = '5.0'
+      config.build_settings['DEFINES_MODULE'] = 'YES'
+    end
+  end
+
+  # Fix search paths for the main Runner target
+  installer.aggregate_targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited) '
+      config.build_settings['HEADER_SEARCH_PATHS'] << '$(SRCROOT)/.symlinks/plugins/** '
     end
   end
 end
