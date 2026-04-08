@@ -42,6 +42,7 @@ git clone https://github.com/flutter/flutter.git --depth 1 --branch $FLUTTER_VER
 git clone https://github.com/flutter/flutter.git --depth 1 --tag $FLUTTER_VERSION /tmp/flutter
 
 export PATH="/tmp/flutter/bin:$PATH"
+export FLUTTER_ROOT="/tmp/flutter"
 
 # Disable analytics
 export FLUTTER_SUPPRESS_ANALYTICS=true

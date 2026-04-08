@@ -10,18 +10,25 @@ project 'Runner', {
 }
 
 def flutter_root
-  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  return ENV['FLUTTER_ROOT'] if ENV['FLUTTER_ROOT']
   
-  unless File.exist?(generated_xcode_build_settings_path)
-    raise "#{generated_xcode_build_settings_path} must exist. Run flutter pub get first"
+  # Try common paths for Generated.xcconfig (handles standard and flattened layouts)
+  base_dir = File.dirname(__FILE__)
+  config_paths = [
+    File.join(base_dir, 'Flutter', 'Generated.xcconfig'),
+    File.join(base_dir, '..', 'Flutter', 'Generated.xcconfig')
+  ]
+  
+  config_paths.each do |path|
+    if File.exist?(path)
+      File.foreach(path) do |line|
+        matches = line.match(/FLUTTER_ROOT\=(.*)/)
+        return matches[1].strip if matches
+      end
+    end
   end
 
-  File.foreach(generated_xcode_build_settings_path) do |line|
-    matches = line.match(/FLUTTER_ROOT\=(.*)/)
-    return matches[1].strip if matches
-  end
-
-  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}"
+  raise "FLUTTER_ROOT not found in environment or Generated.xcconfig. Run flutter pub get first."
 end
 
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
