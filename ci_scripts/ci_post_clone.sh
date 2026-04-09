@@ -56,15 +56,36 @@ flutter pub get --no-example
 flutter precache --ios
 
 # Patch Generated.xcconfig to fix hardcoded local paths for the CI environment
+# In Xcode Cloud flattened layout, Flutter/ is at the repo root (not inside ios/).
+# Flutter's xcode_backend.sh always looks for:
+#   $FLUTTER_APPLICATION_PATH/ios/Flutter/AppFrameworkInfo.plist
+# So with FLUTTER_APPLICATION_PATH=. we need ios/Flutter/ to exist and mirror Flutter/.
 if [ -f Flutter/Generated.xcconfig ]; then
-    echo "▶️ Patching Generated.xcconfig..."
+    echo "▶️ Patching Flutter/Generated.xcconfig (flattened layout)..."
     sed -i '' "s|FLUTTER_ROOT=.*|FLUTTER_ROOT=/tmp/flutter|g" Flutter/Generated.xcconfig
     sed -i '' "s|FLUTTER_APPLICATION_PATH=.*|FLUTTER_APPLICATION_PATH=.|g" Flutter/Generated.xcconfig
+    echo "✓ Patched: FLUTTER_APPLICATION_PATH=."
+
+    # Mirror Flutter/ into ios/Flutter/ so xcode_backend.sh finds AppFrameworkInfo.plist
+    # at the expected path: ./ios/Flutter/AppFrameworkInfo.plist
+    echo "▶️ Mirroring Flutter/ → ios/Flutter/ for flattened layout..."
+    mkdir -p ios/Flutter
+    cp -R Flutter/. ios/Flutter/
+    echo "✓ Flutter/ contents copied to ios/Flutter/"
+
 elif [ -f ios/Flutter/Generated.xcconfig ]; then
-    echo "▶️ Patching ios/Flutter/Generated.xcconfig..."
+    echo "▶️ Patching ios/Flutter/Generated.xcconfig (standard layout)..."
     sed -i '' "s|FLUTTER_ROOT=.*|FLUTTER_ROOT=/tmp/flutter|g" ios/Flutter/Generated.xcconfig
     sed -i '' "s|FLUTTER_APPLICATION_PATH=.*|FLUTTER_APPLICATION_PATH=..|g" ios/Flutter/Generated.xcconfig
+    echo "✓ Patched: FLUTTER_APPLICATION_PATH=.."
 fi
+
+# Show the patched config for debugging
+echo "▶️ Generated.xcconfig contents:"
+cat Flutter/Generated.xcconfig 2>/dev/null || cat ios/Flutter/Generated.xcconfig 2>/dev/null || echo "(not found)"
+
+echo "▶️ Verifying AppFrameworkInfo.plist is reachable..."
+ls ios/Flutter/AppFrameworkInfo.plist 2>/dev/null && echo "✓ AppFrameworkInfo.plist found" || echo "❌ MISSING: ios/Flutter/AppFrameworkInfo.plist"
 
 # Verify assets directory to satisfy pubspec.yaml
 if [ -d assets/images ]; then
@@ -74,32 +95,33 @@ else
     mkdir -p assets/images
 fi
 
-# Create a symbolic link for the ios directory so Flutter tools can find their files
-# (This is needed because the deployment repo is flattened)
-if [ ! -d ios ]; then
-    echo "▶️ Creating ios directory symlink..."
-    mkdir -p ios
-    ln -s ../Flutter ios/Flutter
-fi
-
 echo "▶️ Installing CocoaPods dependencies..."
-# Change to ios directory only if it exists and we aren't already there
-if [ -d ios ]; then
-    echo "▶️ Changing to ios directory..."
+# In standard Flutter layout, Podfile is inside ios/.
+# In Xcode Cloud flattened layout, Podfile is at the repo root.
+# Check for Podfile explicitly rather than checking if ios/ dir exists 
+# (ios/ may exist now after we created it for the Flutter mirror above).
+if [ -f ios/Podfile ]; then
+    echo "▶️ Changing to ios directory (Podfile found there)..."
     cd ios
 elif [ -f Podfile ]; then
-    echo "✓ Already in directory with Podfile, staying here."
+    echo "✓ Podfile found in current directory (flattened layout), staying here."
 else
-    echo "❌ Error: Could not find ios directory or Podfile!"
+    echo "❌ Error: Could not find Podfile in ios/ or current directory!"
     exit 1
 fi
 
-# Update CocoaPods repo if needed
+echo "▶️ Working directory for pod install: $(pwd)"
+echo "▶️ Checking for .flutter-plugins-dependencies..."
+ls -la ../.flutter-plugins-dependencies 2>/dev/null && echo "✓ Found in parent dir" || \
+    ls -la .flutter-plugins-dependencies 2>/dev/null && echo "✓ Found in current dir" || \
+    echo "❌ .flutter-plugins-dependencies NOT FOUND"
+
+# Update CocoaPods repo to ensure fresh podspecs
 echo "▶️ Updating CocoaPods repositories..."
 pod repo update --silent 2>/dev/null || true
 
-# Run pod install with proper flags
+# Run pod install with repo-update flag to ensure fresh module specs
 echo "▶️ Installing pods..."
-pod install
+pod install --repo-update
 
 echo "✅ CI Post Clone Complete!"

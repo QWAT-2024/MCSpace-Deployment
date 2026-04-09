@@ -39,9 +39,16 @@ target 'Runner' do
   use_frameworks! :linkage => :static
   use_modular_headers!
 
-  # Trick flutter_install_all_ios_pods to look for .flutter-plugins-dependencies in the root
-  # (Standard helper uses File.join(ios_application_path, '..', '.flutter-plugins-dependencies'))
-  flutter_install_all_ios_pods File.join(File.dirname(File.realpath(__FILE__)), 'ios')
+  # Determine where .flutter-plugins-dependencies lives.
+  # Standard Flutter layout: it's one level up from Podfile (ios/../.flutter-plugins-dependencies)
+  # Xcode Cloud flattened layout: Podfile IS in the repo root, so check current dir too.
+  podfile_dir = File.dirname(File.realpath(__FILE__))
+  flutter_plugins_deps_parent = if File.exist?(File.join(podfile_dir, '..', '.flutter-plugins-dependencies'))
+    File.join(podfile_dir, '..')  # Standard layout: project root is parent of ios/
+  else
+    podfile_dir                   # Flattened layout: project root IS the Podfile directory
+  end
+  flutter_install_all_ios_pods flutter_plugins_deps_parent
 end
 
 post_install do |installer|
@@ -55,13 +62,12 @@ post_install do |installer|
   end
 
   # Fix search paths for the main Runner target
-  # (Corrected Ruby syntax for AggregateTarget)
   installer.aggregate_targets.each do |target|
     target.user_targets.each do |user_target|
       next unless user_target.name == 'Runner'
       user_target.build_configurations.each do |config|
-        config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited) '
-        config.build_settings['HEADER_SEARCH_PATHS'] << '$(SRCROOT)/.symlinks/plugins/** '
+        existing = config.build_settings['HEADER_SEARCH_PATHS'] || '$(inherited)'
+        config.build_settings['HEADER_SEARCH_PATHS'] = "#{existing} $(SRCROOT)/.symlinks/plugins/**"
       end
     end
   end
