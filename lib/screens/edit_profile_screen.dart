@@ -4,7 +4,6 @@ import 'dart:convert'; // For Base64 decoding (backward compatibility)
 import 'dart:io'; // For File operations
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // Import Firebase Storage
-// import 'package:google_fonts/google_fonts.dart'; // Removed
 import 'package:image_picker/image_picker.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -84,15 +83,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // Helper to upload image to Firebase Storage
   Future<String?> _uploadImage(File imageFile, String userId) async {
     try {
-      // Create a unique filename
       final String fileName = 'profile_images/${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final Reference storageRef = FirebaseStorage.instance.ref().child(fileName);
-      
-      // Upload file
       final UploadTask uploadTask = storageRef.putFile(imageFile);
       final TaskSnapshot snapshot = await uploadTask;
-      
-      // Get URL
       final String downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
     } catch (e) {
@@ -110,7 +104,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (currentUser != null) {
           String? profileImageUrl = _currentImageUrl;
 
-          // If a new image was picked, upload it first
           if (_newImageFile != null) {
             String? uploadedUrl = await _uploadImage(_newImageFile!, currentUser.uid);
             if (uploadedUrl != null) {
@@ -128,19 +121,69 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             'alternateNumber': _alternateNumberController.text.trim(),
             'alternateMailId': _alternateMailIdController.text.trim(),
             'preferredUserName': _preferredUserNameController.text.trim(),
-            'profileImage': profileImageUrl, // Save the URL (or old Base64)
+            'profileImage': profileImageUrl,
             'updatedAt': FieldValue.serverTimestamp(),
           };
 
           await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).update(updateData);
           
           if (mounted) {
-            Navigator.pop(context, true); // Return success
+            Navigator.pop(context, true);
           }
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  // --- ACCOUNT DELETION LOGIC (Required for Guideline 5.1.1(v)) ---
+  Future<void> _deleteAccount() async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Account', style: _timesNewRomanStyle(fontWeight: FontWeight.bold)),
+        content: Text(
+          'Are you sure you want to delete your account? This action is permanent and all your data will be removed.',
+          style: _timesNewRomanStyle(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      setState(() => _isLoading = true);
+      try {
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          // 1. Delete data from Firestore
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
+          // 2. Delete user from Auth
+          await user.delete();
+          
+          if (mounted) {
+            // Navigate to login or splash screen
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Please re-authenticate and try again to delete account.')),
+          );
         }
       } finally {
         if (mounted) setState(() => _isLoading = false);
@@ -157,7 +200,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  // Helper to display the image (New File > URL > Base64 > Placeholder)
   ImageProvider? _getProfileImage() {
     if (_newImageFile != null) {
       return FileImage(_newImageFile!);
@@ -197,7 +239,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           controller: controller,
           keyboardType: keyboardType,
           readOnly: readOnly,
-          style: _timesNewRomanStyle(fontSize: 15), // Input text style
+          style: _timesNewRomanStyle(fontSize: 15),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: _timesNewRomanStyle(color: Colors.grey[400], fontSize: 14),
@@ -294,12 +336,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 hint: 'Enter company name',
                 validator: (v) => v!.isEmpty ? 'Required' : null,
               ),
+              
+              // GST NUMBER MADE OPTIONAL AS PER GUIDELINE 5.1.1(v)
               _buildTextField(
                 controller: _registrationNumberController,
-                label: 'GST Number',
-                hint: 'Enter GST number',
-                validator: (v) => v!.isEmpty ? 'Required' : null,
+                label: 'GST Number (Optional)',
+                hint: 'Enter GST number if available',
+                validator: null, // Removed requirement
               ),
+              
               _buildTextField(
                 controller: _locationController,
                 label: 'Location',
@@ -324,7 +369,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 label: 'Official Email',
                 hint: 'email@company.com',
                 keyboardType: TextInputType.emailAddress,
-                readOnly: true, // Email usually shouldn't change without verification
+                readOnly: true, 
               ),
               Row(
                 children: [
@@ -381,6 +426,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                 ),
               ),
+              
+              const SizedBox(height: 20),
+
+              // --- ACCOUNT DELETION BUTTON (Required for Guideline 5.1.1(v)) ---
+              TextButton(
+                onPressed: _isLoading ? null : _deleteAccount,
+                child: Text(
+                  'Delete Account',
+                  style: _timesNewRomanStyle(
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+              
               const SizedBox(height: 30),
             ],
           ),

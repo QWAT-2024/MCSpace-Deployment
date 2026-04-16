@@ -252,11 +252,14 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                   _buildInfoCard(
                     title: "Registration Info",
                     children: [
-                      _buildProfileRow(
-                        Icons.badge,
-                        "GST Number",
-                        _userData?['registrationNumber'] as String?,
-                      ), // Null-safe access
+                      if ((_userData?['registrationNumber'] as String?)
+                              ?.isNotEmpty ==
+                          true) // Fully null-safe check
+                        _buildProfileRow(
+                          Icons.badge,
+                          "GST Number (optional)",
+                          _userData?['registrationNumber'] as String?,
+                        ), // Null-safe access
                       _buildProfileRow(
                         Icons.person_outline,
                         "Preferred Name",

@@ -888,9 +888,8 @@ class _EnrollMachineFormState extends State<EnrollMachineForm> {
                 ),
                 _buildTextField(
                   controller: _gstController,
-                  label: 'GST Number',
+                  label: 'GST Number (optional)',
                   hint: 'e.g., 22AAAAA0000A1Z5',
-                  validator: (v) => v!.isEmpty ? 'Required' : null,
                 ),
                 _buildTextField(
                   controller: _modelYearController,

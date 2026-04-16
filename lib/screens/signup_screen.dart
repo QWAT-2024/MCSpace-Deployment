@@ -411,10 +411,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   _buildTextField(
                     controller: _registrationNumberController,
-                    labelText: 'GST Number',
-                    isRequired: true,
-                    validator: (v) =>
-                        v!.isEmpty ? 'Please enter GST number' : null,
+                    labelText: 'GST Number (Optional)',
+                    isRequired: false
                   ),
                   const SizedBox(height: 20),
 
